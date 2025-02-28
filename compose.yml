@@ -1,0 +1,11 @@
+services:
+  task_manager:
+    image: task_manager:0.1
+    ports:
+      - 8082:8082
+    environment:
+      - REDIS_HOST=redis:6379
+  redis:
+    image: redis
+    ports:
+      - 6380:6379
