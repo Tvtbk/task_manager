@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.22.2-alpine
-RUN apk add curl
+RUN apk add curl # Добавляем в контейнер утилиту для дебага
 WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
