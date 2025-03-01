@@ -3,6 +3,8 @@ services:
     build: 
       context: .
       dockerfile: DockerfileGoWithRedisProject
+      labels:
+        - com.packtpub.compose.app=task_manager
     image: task_manager:0.1
     ports:
       - 8082:8082
@@ -22,7 +24,11 @@ services:
       - 6380:6379
   redis_populate:
     image: redis
+    command: bash -c "chmod +x /redis_populate.sh && /redis_populate.sh /redis_populate.txt"
     depends_on:
       - redis
     env_file:
       - ./env.redis_populate
+    volumes:
+      - ./redis_populate.txt:/redis_populate.txt
+      - ./redis_populate.sh:/redis_populate.sh
