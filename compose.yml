@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: DockerfileGoWithRedisProject
-      labels:
-        - com.packtpub.compose.app=task_manager
     image: task_manager:0.1
     ports:
       - 8082:8082
@@ -16,6 +14,9 @@ services:
       timeout: 10s
       retries: 5
       start_period: 5s
+    networks:
+      - task-manager-public-network
+      - redis-network
     depends_on: # Ждём redis
       - redis
   redis:
@@ -23,6 +24,8 @@ services:
     ports:
       - 6380:6379
     entrypoint: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    networks:
+      - redis-network
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
       - redis-data:/data
@@ -33,6 +36,8 @@ services:
       - redis
     env_file:
       - ./env.redis_populate
+    networks:
+      - task-manager-public-network
     volumes:
       - ./redis_populate.txt:/redis_populate.txt
       - ./redis_populate.sh:/redis_populate.sh
@@ -43,12 +48,16 @@ services:
       - redis
     environment:
       - BACKUP_PERIOD=10
+    networks:
+      - task-manager-public-network
     volumes:
       - ./snapshot-backup.sh:/snapshot-backup.sh
       - redis-data:/data:ro # ro - read only
       - backup:/backup
+networks: # Оверлейная сеть
+  task-manager-public-network:
+  redis-network:
 volumes: # Общие хранилища
   redis-data:
     external: true
   backup: # Тот для бэкапов
-
